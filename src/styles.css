@@ -1,0 +1,56 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  min-height: 100vh;
+}
+
+.brand-mark {
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  font-size: 12px;
+  font-weight: 800;
+  color: #ffffff;
+  background: #111827;
+  letter-spacing: -0.04em;
+}
+
+.active-card {
+  outline: 2px solid #111827;
+  outline-offset: 2px;
+}
+
+.empty-state {
+  min-height: 420px;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  border-style: dashed !important;
+}
+
+.score-ring {
+  width: 104px;
+  height: 104px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  background: radial-gradient(circle at center, #fff 52%, transparent 53%), conic-gradient(#111827 75%, #e5e7eb 0);
+  border: 1px solid #e5e7eb;
+}
+
+.post-preview {
+  margin: 24px 0 0;
+  padding: 20px;
+  white-space: pre-wrap;
+  word-break: break-word;
+  border-radius: 16px;
+  border: 1px solid #e5e7eb;
+  background: #f9fafb;
+  font: inherit;
+  color: #111827;
+}
