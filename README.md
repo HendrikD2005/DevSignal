@@ -16,7 +16,7 @@ DevSignal lädt öffentliche GitHub-Repositories, analysiert README und Sprachen
 - TypeScript
 - Material UI
 - Playwright
-- GitHub Actions CI
+- GitHub Actions CI/CD
 
 ## Start
 
@@ -37,6 +37,14 @@ http://localhost:5173
 npm run build
 ```
 
+## Unit-Tests mit Coverage
+
+```bash
+npm run test:coverage
+```
+
+Die Vitest-Coverage-Schwelle liegt bei 80 Prozent fuer Statements, Branches, Functions und Lines.
+
 ## End-to-End-Tests
 
 ```bash
@@ -46,7 +54,7 @@ npm run test:e2e
 
 Die Playwright-Tests mocken die GitHub-API. Dadurch laufen sie stabil und unabhängig von Rate Limits.
 
-## CI
+## CI/CD
 
 Die GitHub Actions Pipeline liegt unter:
 
@@ -56,11 +64,14 @@ Die GitHub Actions Pipeline liegt unter:
 
 Sie führt aus:
 
-1. Dependency Installation
+1. Dependency Installation mit `npm ci`
 2. TypeScript/Vite Build
-3. Playwright Browser Installation
-4. E2E Tests
-5. Upload des Playwright Reports
+3. Vitest Unit-Tests mit 80-Prozent-Coverage-Gate
+4. Upload des Coverage Reports
+5. Playwright Browser Installation
+6. E2E Tests
+7. Upload des Playwright Reports
+8. Deployment nach GitHub Pages bei Pushes auf `main`
 
 ## MVP-Grenzen
 
