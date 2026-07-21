@@ -1,4 +1,5 @@
 import type { GitHubRepository, RepositoryAnalysis } from './types';
+import { createTranslator, type Locale } from './i18n';
 
 const SKILL_KEYWORDS: Record<string, string[]> = {
   Java: ['java', 'spring', 'spring boot', 'maven', 'gradle'],
@@ -28,33 +29,39 @@ export function detectSkills(repo: GitHubRepository, readme: string, languages: 
   return [...skills].slice(0, 10);
 }
 
-export function calculateScore(repo: GitHubRepository, readme: string, skills: string[]): { score: number; reasons: string[] } {
+export function calculateScore(
+  repo: GitHubRepository,
+  readme: string,
+  skills: string[],
+  locale: Locale,
+): { score: number; reasons: string[] } {
   let score = 35;
   const reasons: string[] = [];
+  const t = createTranslator(locale);
 
   if (repo.description) {
     score += 12;
-    reasons.push('Repository hat eine Beschreibung.');
+    reasons.push(t('analysis.reason.hasDescription'));
   }
 
   if (readme.length > 250) {
     score += 20;
-    reasons.push('README wirkt aussagekräftig.');
+    reasons.push(t('analysis.reason.readmeDetailed'));
   }
 
   if (skills.length >= 3) {
     score += 12;
-    reasons.push('Mehrere relevante Skills erkannt.');
+    reasons.push(t('analysis.reason.skillsDetected'));
   }
 
   if (repo.stargazers_count > 0) {
     score += 8;
-    reasons.push('Repository hat öffentliche Resonanz.');
+    reasons.push(t('analysis.reason.publicResonance'));
   }
 
   if (/demo|screenshot|preview|architecture|setup/i.test(readme)) {
     score += 13;
-    reasons.push('README enthält präsentationsnahe Inhalte.');
+    reasons.push(t('analysis.reason.readmePresentation'));
   }
 
   return {
@@ -63,22 +70,23 @@ export function calculateScore(repo: GitHubRepository, readme: string, skills: s
   };
 }
 
-export function generateLinkedInPost(repo: GitHubRepository, skills: string[], score: number): string {
-  const techStack = skills.length > 0 ? skills.join(', ') : repo.language ?? 'moderne Web-Technologien';
-  const description = repo.description ?? 'ein eigenes Softwareprojekt zur Verbesserung meines Entwicklerportfolios';
+export function generateLinkedInPost(repo: GitHubRepository, skills: string[], score: number, locale: Locale): string {
+  const t = createTranslator(locale);
+  const techStack = skills.length > 0 ? skills.join(', ') : repo.language ?? t('analysis.post.defaultTechStack');
+  const description = repo.description ?? t('analysis.post.defaultDescription');
 
   return [
-    `Ich habe mein Projekt „${repo.name}” weiter ausgearbeitet.`,
+    t('analysis.post.line1', { repoName: repo.name }),
     '',
-    `Dabei geht es um ${description}.`,
+    t('analysis.post.line3', { description }),
     '',
-    `Technisch spannend daran: ${techStack}.`,
+    t('analysis.post.line5', { techStack }),
     '',
-    `Für mein Portfolio ist das Projekt besonders wertvoll, weil es nicht nur Code zeigt, sondern auch Produktdenken, technische Umsetzung und klare Dokumentation verbindet.`,
+    t('analysis.post.line7'),
     '',
-    `Portfolio-Score: ${score}/100`,
+    t('analysis.post.line9', { score }),
     '',
-    `GitHub: ${repo.html_url}`,
+    t('analysis.post.line11', { url: repo.html_url }),
   ].join('\n');
 }
 
@@ -86,9 +94,10 @@ export function analyzeRepository(
   repo: GitHubRepository,
   readme: string,
   languages: Record<string, number>,
+  locale: Locale,
 ): RepositoryAnalysis {
   const skills = detectSkills(repo, readme, languages);
-  const { score, reasons } = calculateScore(repo, readme, skills);
+  const { score, reasons } = calculateScore(repo, readme, skills, locale);
 
   return {
     languages,
@@ -96,6 +105,6 @@ export function analyzeRepository(
     skills,
     score,
     scoreReasons: reasons,
-    linkedInPost: generateLinkedInPost(repo, skills, score),
+    linkedInPost: generateLinkedInPost(repo, skills, score, locale),
   };
 }
